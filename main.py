@@ -40,11 +40,21 @@ def mean_squared_distance(data_dict):
     return np.mean(lst, axis=0)
 
 
+# def flatten_dict_content(full_dict):
+#     lst_x = []
+#     lst_y = []
+#     for ii in full_dict:
+#         if isinstance(full_dict[ii], dict):
+#             lst_x.append(flatten_dict_content(full_dict[ii]))
+#         else:
+#             lst.append(full_dict[ii])
+#     return np.array(lst).flatten()
+
+
 def step_length_join(data_dict):
     lst = []
     for ii in data_dict:
         for jj in data_dict[ii]:
-            print(step_length(data_dict[ii][jj]))
             lst.append(np.sqrt(displacement_2d(data_dict[ii][jj])))
     return np.array(lst).flatten()
 
@@ -55,6 +65,17 @@ def step_length_dict(data_dict):
         for jj in data_dict[ii]:
             b_dict[ii + jj] = np.sqrt(displacement_2d(data_dict[ii][jj]))
     return b_dict
+
+
+def step_length_sample(data_dict):
+    s_dict = {}
+    for ii in data_dict:
+        for jj in data_dict[ii]:
+            if ii not in s_dict:
+                s_dict[ii] = []
+            s_dict[ii].append(np.sqrt(displacement_2d(data_dict[ii][jj])))
+        s_dict[ii] = np.array(s_dict[ii]).flatten()
+    return s_dict
 
 
 def histogram_plot(data, rounded_range, interval):
@@ -78,12 +99,16 @@ def floor_dig(num, decimal):
 
 def bead_plot(displacement_dict):
     for i in displacement_dict:
+        print(i, displacement_dict)
         plt.figure(i)
-        dec = 0
+        step_size = 5
+        dec = -np.log10(step_size)
         step_l = displacement_dict[i]
         step_l_r = (floor_dig(min(step_l), dec),
                     ceil_dig(max(step_l), dec))
-        histogram_plot(step_l, step_l_r, 1 ** (-dec))
+        histogram_plot(step_l, step_l_r, 10 ** (-dec))
+
+
 
 
 if __name__ == "__main__":
@@ -93,11 +118,12 @@ if __name__ == "__main__":
     Analysis.plot_x_vs_y(time, 0, msd, 0, "mean squared distance", None)
 
     step_length = step_length_join(read_files("tracking_data"))
-    print("step_len:", step_length)
     plt.figure("histogram")
     decimal = -1
     step_length_range = (floor_dig(min(step_length), decimal),
                          ceil_dig(max(step_length), decimal))
     histogram_plot(step_length, step_length_range, 10 ** (-decimal))
-    bead_plot(step_length_dict(read_files("tracking_data")))
+    # bead_plot(step_length_dict(read_files("tracking_data")))
+    # plt.show()
+    bead_plot(step_length_sample(read_files("tracking_data")))
     plt.show()
