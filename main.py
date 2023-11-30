@@ -31,13 +31,14 @@ def displacement_2d(coordinates):
         coordinates[1], coordinates[1][0]) ** 2
 
 
-def mean_squared_distance(data_dict):
+def mean_squared_distance(data_dict, uncertainty):
     lst = []
+    uncertainty_list = []
     for ii in data_dict:
         for jj in data_dict[ii]:
             print(displacement_2d(data_dict[ii][jj]))
             lst.append(displacement_2d(data_dict[ii][jj]))
-    return np.mean(lst, axis=0)
+    return np.mean(lst, axis=0), uncertainty_list
 
 
 # def flatten_dict_content(full_dict):
@@ -83,10 +84,11 @@ def histogram_plot(data, rounded_range, interval):
     plt.ylabel("Probability Density")
     # round the range to nearest 10 that in include the all the num in data.
     print(rounded_range, (rounded_range[1] - rounded_range[0]) / interval)
-    plt.hist(data, bins=int((rounded_range[1] - rounded_range[0]) / interval),
-             density=True,
-             range=rounded_range
-             , edgecolor='black', label="Data Recorded")
+    return plt.hist(data,
+                    bins=int((rounded_range[1] - rounded_range[0]) / interval),
+                    density=True,
+                    range=rounded_range
+                    , edgecolor='black', label="Data Recorded")
 
 
 def ceil_dig(num, decimal):
@@ -107,8 +109,6 @@ def bead_plot(displacement_dict):
         step_l_r = (floor_dig(min(step_l), dec),
                     ceil_dig(max(step_l), dec))
         histogram_plot(step_l, step_l_r, 10 ** (-dec))
-
-
 
 
 if __name__ == "__main__":
