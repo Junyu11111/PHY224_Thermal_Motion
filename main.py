@@ -7,14 +7,15 @@ import os
 
 def read_files(data_folder_path):
     data_dict = {}
-    pixel_to_m = 0.1199 * 10**-6
+    # todo: check pixel_to_m
+    pixel_to_m = 0.1199 * 10 ** -6  # in meters
     for path in os.listdir(data_folder_path):
         sample_dict = {}
         for file in os.listdir(os.path.join(data_folder_path, path)):
             key = file[-7:-4]
             sample_dict[key] = np.loadtxt(
                 os.path.join(data_folder_path, path, file),
-                unpack=True, skiprows=2)*pixel_to_m
+                unpack=True, skiprows=2) * pixel_to_m
         data_dict[path[:-5]] = sample_dict
     return data_dict
 
@@ -53,7 +54,8 @@ def mean_squared_distance(data_dict, uncertainty_in_position):
 
 
 def uncertainty_in_mean(uncertainties):
-    return np.sqrt(np.sum(np.square(uncertainties)))/len(uncertainties)
+    return np.sqrt(np.sum(np.square(uncertainties))) / len(uncertainties)
+
 
 # def flatten_dict_content(full_dict):
 #     lst_x = []
@@ -126,7 +128,8 @@ def bead_plot(displacement_dict):
 
 
 if __name__ == "__main__":
-    error_in_position = 0.00019*10**-6
+    # todo: error_in_position
+    error_in_position = 0.00019 * 10 ** -6  # in meters
     msd, err_msd = mean_squared_distance(read_files("tracking_data"),
                                          error_in_position)
     time = np.arange(0, 60, 0.5)
