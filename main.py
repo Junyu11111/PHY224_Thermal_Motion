@@ -7,13 +7,14 @@ import os
 
 def read_files(data_folder_path):
     data_dict = {}
+    pixel_to_m = 0.1199 * 10**-6
     for path in os.listdir(data_folder_path):
         sample_dict = {}
         for file in os.listdir(os.path.join(data_folder_path, path)):
             key = file[-7:-4]
             sample_dict[key] = np.loadtxt(
                 os.path.join(data_folder_path, path, file),
-                unpack=True, skiprows=2)
+                unpack=True, skiprows=2)*pixel_to_m
         data_dict[path[:-5]] = sample_dict
     return data_dict
 
@@ -31,15 +32,28 @@ def displacement_2d(coordinates):
         coordinates[1], coordinates[1][0]) ** 2
 
 
-def mean_squared_distance(data_dict, uncertainty):
+def mean_squared_distance(data_dict, uncertainty_in_position):
     lst = []
     uncertainty_list = []
     for ii in data_dict:
         for jj in data_dict[ii]:
             print(displacement_2d(data_dict[ii][jj]))
             lst.append(displacement_2d(data_dict[ii][jj]))
-    return np.mean(lst, axis=0), uncertainty_list
+            uncertainty_list.append(
+                Analysis.error_prop_addition(
+                    [Analysis.error_prop_exponent(data_dict[ii][jj][0],
+                                                  uncertainty_in_position, 2),
+                     Analysis.error_prop_exponent(data_dict[ii][jj][1],
+                                                  uncertainty_in_position, 2)]))
+    uncertainty_list = np.array(uncertainty_list).transpose()
+    mean_err = []
+    for i in uncertainty_list:
+        mean_err.append(uncertainty_in_mean(i))
+    return np.mean(lst, axis=0), np.array(mean_err)
 
+
+def uncertainty_in_mean(uncertainties):
+    return np.sqrt(np.sum(np.square(uncertainties)))/len(uncertainties)
 
 # def flatten_dict_content(full_dict):
 #     lst_x = []
@@ -112,14 +126,16 @@ def bead_plot(displacement_dict):
 
 
 if __name__ == "__main__":
-    msd = mean_squared_distance(read_files("tracking_data"))
+    error_in_position = 0.00019*10**-6
+    msd, err_msd = mean_squared_distance(read_files("tracking_data"),
+                                         error_in_position)
     time = np.arange(0, 60, 0.5)
     plt.figure("msd vs time")
-    Analysis.plot_x_vs_y(time, 0, msd, 0, "mean squared distance", None)
+    Analysis.plot_x_vs_y(time, 0, msd, err_msd, "mean squared distance", None)
 
     step_length = step_length_join(read_files("tracking_data"))
     plt.figure("histogram")
-    decimal = -1
+    decimal = -0.006
     step_length_range = (floor_dig(min(step_length), decimal),
                          ceil_dig(max(step_length), decimal))
     histogram_plot(step_length, step_length_range, 10 ** (-decimal))
