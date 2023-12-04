@@ -7,8 +7,7 @@ import os
 
 def read_files(data_folder_path):
     data_dict = {}
-    # todo: check pixel_to_m
-    pixel_to_m = 0.1199 * 10 ** -6  # in meters
+    pixel_to_m = 0.12048 * 10 ** -6  # in meters
     for path in os.listdir(data_folder_path):
         sample_dict = {}
         for file in os.listdir(os.path.join(data_folder_path, path)):
@@ -128,8 +127,7 @@ def bead_plot(displacement_dict):
 
 
 if __name__ == "__main__":
-    # todo: error_in_position
-    error_in_position = 0.00019 * 10 ** -6  # in meters
+    error_in_position = 0.003 * 10 ** -6  # in meters
     msd, err_msd = mean_squared_distance(read_files("tracking_data"),
                                          error_in_position)
     time = np.arange(0, 60, 0.5)
