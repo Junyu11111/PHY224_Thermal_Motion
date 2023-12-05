@@ -59,8 +59,7 @@ def plot_x_vs_y(x: Union[ndarray, Iterable, int, float], x_error: Union[ndarray,
 
 def curve_fit_plt(x, y, y_error, graph_name, model):
     popt, pcov = curve_fit(model, x, y, sigma=y_error, absolute_sigma=True)
-    step = (x[-1] - x[0]) / 100 * len(x)
-    x_c = np.arange(x[0] - step, x[-1] + step, step)
+    x_c = np.linspace(x[0], x[-1], 100)
     prediction_c = model(x_c, *popt)
     plt.plot(x_c, prediction_c, label="{} best fit line".format(graph_name))
     prediction = model(x, *popt)
