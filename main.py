@@ -37,7 +37,7 @@ def mean_squared_distance(data_dict, uncertainty_in_position):
     uncertainty_list = []
     for ii in data_dict:
         for jj in data_dict[ii]:
-            print(displacement_2d(data_dict[ii][jj]))
+            # print(displacement_2d(data_dict[ii][jj]))
             lst.append(displacement_2d(data_dict[ii][jj]))
             uncertainty_list.append(
                 Analysis.error_prop_addition(
