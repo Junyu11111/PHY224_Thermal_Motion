@@ -100,14 +100,10 @@ def plot_residual(x: Union[ndarray, Iterable, int, float], y: Union[ndarray, Ite
 def plot_data_range(data_dict, uncertainty_dict, name):
     count = 0
     ax = plt.gca()
-    ratio = 0.01
-    x_left, x_right = ax.get_xlim()
-    y_low, y_high = ax.get_ylim()
-    ax.set_aspect(abs((x_right - x_left) / (y_low - y_high)) * ratio)
     ax.axes.get_yaxis().set_visible(False)
     for k in data_dict:
         plt.errorbar(data_dict[k], count, xerr=uncertainty_dict[k], label="{} {}".format(name, k), marker="x",
-                     capsize=3,
+                     capsize=5,
                      capthick=1)
         count += 1
     plt.legend(fontsize="6.5", fancybox=True, framealpha=0.3)
